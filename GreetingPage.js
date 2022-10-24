@@ -3,15 +3,20 @@ let family = {
         //starting money value 
         name: "",
         bankAccount: 2000,
+        familyMembers: null,
         //instances may not be valid
         //does let vs var make a difference here? 
-        //sarah: new HeadOfFamily("Sarah"),
-        //let tessa = new FamilyMember("Tessa"),
-        //riley: new FamilyMember("Riley"),
-        //e: new FamilyMember("E")
         setName: function(){
             this.name = document.getElementById("familyName").value;
             document.getElementById("familyTitle").innerHTML = "The " + this.name + " Family";
+        },
+
+        familyOf4: function(){
+            let sarah = new FamilyMember("Sarah");
+            let tessa = new FamilyMember("Tessa");
+            let riley = new FamilyMember("Riley");
+            let e = new FamilyMember("E");
+            this.familyMembers = {sarah, tessa, riley, e};
         }
 }
 
@@ -22,7 +27,22 @@ class FamilyMember{
     }
 }
 
+
 class HeadOfFamily extends FamilyMember{
 }
 
+let votingBlock = function(title){
+    document.getElementById("testVoteBlock").innerHTML = "pizzaSauce";
+}
 //correct this below by not making family accesible to the window?
+
+
+
+/*Below are all the html pages to load.
+ *After they work, find a more efficient/modern way to load them.
+ */
+
+ 
+let pageLoaded = function(){
+    document.querySelector("body").innerHTML = "<h1>happy<\h1>";
+}

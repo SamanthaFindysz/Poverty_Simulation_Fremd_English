@@ -5,8 +5,35 @@
     <body>
         <h1 id = "familyTitle">The Family</h1>
         <!--Add Description-->
-        <input type = "text" id = "familyName" oninput = "family.setName()">
-        <input type = "button" value = "Enter">        
+        <p id = "introductionP">
+            Before you begin, decide who will play which role in your family: 
+            <br>
+            Mom: Sarah works full time in retail, and makes $652/week after taxes. Sarah is your HEAD OF HOUSEHOLD, who will have the final decision on all matters if the group is ever split/undecided. In a group of 5, you may double Sarah's role and thus gain more income.
+            <br>
+            Child: Tessa is a high school senior going through the college app process. Tessa is your TIME KEEPER, who needs a careful eye on the clock.
+            <br>
+            Child: Riley is a high school freshman who loves basketball. Riley is your RECORD KEEPER, who will need notes + math skills to keep track of finances. 
+            <br>
+            Child: E. is a 5th grader who loves basketball and video games. E. is your TASK MANAGER, who will need paper or your iPad to keep notes on choices the group makes and general feelings/attitudes/reactions you notice (this will help you lead discussion later)
+            <br><br>
+            A note on this activity:
+            <br><br>
+            This simulation is not perfect, in that the choices you make are not directly programmed into explicitly consequences. This is purposeful, as it avoids making this experience too much of a "game." 
+            <br><br>
+            As you make choices, you should discuss how they might impact a family. Which choices would cause distress? What might have happened had you made a different choice? Do you see options that this simulation didn't allow for?
+            <br><br>
+            You may also make decisions that aren't options here. For instance, you may choose to search for a cheaper apartment on your own as a way to save money on rent. You would have to make this choice on your own, and use your own research to follow through.
+            <br><br>
+            Please keep in mind that this is only a simulation. You will soon see a quote in chapter 1 of this book that states: "'You should hang out, get to know what [people] do, how they do it'" (Venkatesh 21). We can't get to know exactly what the Dalton family would do, so this is an attempt to get only a glimpse. Every person is different and will make choices based on their personal background and opinions, and we can't forget that. 
+            <br><br>
+            The intent of this activity is not to get a perfect idea of what life for a family like the Daltons might be like. It is only to make us think from a different perspective for a while. 
+            <br><br>
+            The Dalton family experience is based on recent research. If you end early, take a look through this research to give you more context as you prepare to read our next book.
+        </p><br>
+        <input type = "text" id = "familyName" oninput = "family.setName()" placeholder="Family Name"><br> 
+        <input type = "button" value = "4 family members" onclick = "family.familyOf4()"><br>
+        <input type = "button" value = "Week 1">
+        <div id = "testVoteBlock"></div>
         <script src="GreetingPage.js"></script>
     </body>
 </html>
