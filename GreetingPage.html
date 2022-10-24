@@ -3,10 +3,10 @@
     <!--What does 'head' do?-->
     <head></head>
     <body>
-        <h1>The Family</h1>
+        <h1 id = "familyTitle">The Family</h1>
         <!--Add Description-->
-        <input type = "text" id = "familyName">
-        <input type = "button" value = "Enter" onclick="createFamily()">
+        <input type = "text" id = "familyName" oninput = "family.setName()">
+        <input type = "button" value = "Enter">        
         <script src="GreetingPage.js"></script>
     </body>
 </html>

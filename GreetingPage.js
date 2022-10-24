@@ -1,16 +1,18 @@
-class Family{
+let family = {
     //perons data type = array
-    constructor(name){
         //starting money value 
-        this.name = name;
-        this.bankAccount = 2000;
+        name: "",
+        bankAccount: 2000,
         //instances may not be valid
         //does let vs var make a difference here? 
-        this.sarah = new HeadOfFamily("Sarah");
-        this.tessa = new FamilyMember("Tessa");
-        this.riley = new FamilyMember("Riley");
-        this.e = new FamilyMember("E");
-    }
+        //sarah: new HeadOfFamily("Sarah"),
+        //let tessa = new FamilyMember("Tessa"),
+        //riley: new FamilyMember("Riley"),
+        //e: new FamilyMember("E")
+        setName: function(){
+            this.name = document.getElementById("familyName").value;
+            document.getElementById("familyTitle").innerHTML = "The " + this.name + " Family";
+        }
 }
 
 class FamilyMember{
@@ -24,7 +26,3 @@ class HeadOfFamily extends FamilyMember{
 }
 
 //correct this below by not making family accesible to the window?
-let family;
-let createFamily = function(){
-    family = new Family(document.getElementById("familyName").value);
-}
