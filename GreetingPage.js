@@ -44,5 +44,8 @@ let votingBlock = function(title){
 
  
 let pageLoaded = function(){
-    document.querySelector("body").innerHTML = "<h1>happy<\h1>";
+    //document.querySelector("body").innerHTML = "<h1>happy<\h1>";
+    $(document).ready(function(){
+        $("#introductionParagraph").text("happy");
+    })
 }
