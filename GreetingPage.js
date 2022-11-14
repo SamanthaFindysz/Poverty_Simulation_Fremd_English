@@ -1,3 +1,5 @@
+//import React from "react";
+
 let family = {
     //perons data type = array
         //starting money value 
@@ -49,3 +51,13 @@ let pageLoaded = function(){
         $("#introductionParagraph").text("happy");
     })
 }
+
+/**class TestRender extends React.Component{
+    render(){
+        return <h1>React is Working</h1>
+    }
+}
+
+const testReact = () => {
+    ReactDOM.render(<TestRender/>,document.getElementById("reactTester"));
+}**/

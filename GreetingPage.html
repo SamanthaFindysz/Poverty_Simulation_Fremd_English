@@ -2,12 +2,20 @@
 <html>
     <!--What does 'head' do?-->
     <head>
+        <!--How I added React to this: https://reactjs.org/docs/add-react-to-a-website.html#optional-try-react-with-jsx-->
+        <!--How I served this website locally: https://github.com/vercel/serve-->
+        <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
+
+        
         <script src="GreetingPage.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script></head>
+        <!--<script src="FirstReactComponent.jsx"></script>-->
     <body>
         <h1 id = "familyTitle">The Family</h1>
         <!--Add Description-->
-        <p id = "introductionParagraph">
+        <!--<p id = "introductionParagraph">
             Before you begin, decide who will play which role in your family: 
             <br>
             Mom: Sarah works full time in retail, and makes $652/week after taxes. Sarah is your HEAD OF HOUSEHOLD, who will have the final decision on all matters if the group is ever split/undecided. In a group of 5, you may double Sarah's role and thus gain more income.
@@ -31,10 +39,13 @@
             The intent of this activity is not to get a perfect idea of what life for a family like the Daltons might be like. It is only to make us think from a different perspective for a while. 
             <br><br>
             The Dalton family experience is based on recent research. If you end early, take a look through this research to give you more context as you prepare to read our next book.
-        </p><br>
+        </p><br>-->
         <input type = "text" id = "familyName" oninput = "family.setName()" placeholder="Family Name"><br> 
         <input type = "button" value = "4 family members" onclick = "family.familyOf4()"><br>
-        <input type = "button" value = "Week 1">
         <div id = "testVoteBlock"></div>
+        <div id = "like_button_container"></div>
+        <div id = "react_tester"></div>
+        <script type = "text/babel" src = "first_react_component.jsx"></script>
+        <script type = "text/babel" src="like_button.jsx"></script> 
     </body>
 </html>
