@@ -9,9 +9,9 @@ const family = {
         familyMembers: null,
         //instances may not be valid
         //does let vs var make a difference here? 
-        setName: function(){
-            this.name = document.getElementById("familyName").value;
-            document.getElementById("homeTitle").innerHTML = "The " + this.name + " Family";
+        setName: function(name1){
+            this.name = name1;
+            //document.getElementById("homeTitle").innerHTML = "The " + this.name + " Family";
         },
 
         familyOf4: function(){
@@ -51,7 +51,7 @@ let pageLoaded = function(){
     })
 }
 
-/**class Webpage extends React.Component {
+class Webpage extends React.Component {
     constructor(props){
         super(props);
         this.state = {
@@ -75,7 +75,7 @@ let pageLoaded = function(){
 
 const Title = (props) => {
     if(props.day == 0){
-        return <h1 id = "homeTitle">The Family</h1>
+        return <h1 id = "homeTitle">The {family.name} Family</h1>
     }
     else {
         return <h1>{"Day " + props.day}</h1>
@@ -105,7 +105,7 @@ const UserInteraction = (props) => {
     switch(props.day){
         case 0:
             return <div>
-                <input type = "text" onInput = {family.setName()} placeholder ="Family Name" id = "familyName"/>
+                <input type = "text" onInput = {family.setName("happy")} placeholder ="Family Name" id = "familyName"/>
             </div>
         case 1:
             return <div>
@@ -159,4 +159,4 @@ const IntroDescription = (props) => {
 
 const domContainer = document.querySelector('#react_tester');
 const root = ReactDOM.createRoot(domContainer);
-root.render(<Webpage />);**/
+root.render(<Webpage />);
