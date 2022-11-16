@@ -1,12 +1,4 @@
 'use strict';
-
-var familyF = {
-    name: "",
-    setName: function(name){
-        this.name = name
-    }
-}
-
 class Webpage extends React.Component {
     constructor(props){
         super(props);
@@ -61,7 +53,7 @@ const UserInteraction = (props) => {
     switch(props.day){
         case 0:
             return <div>
-                <input type = "text" onInput = "familyF.setName()" placeholder ="Family Name"/>
+                <input type = "text" onInput = {family.setName()} placeholder ="Family Name" id = "familyName"/>
             </div>
         case 1:
             return <div>

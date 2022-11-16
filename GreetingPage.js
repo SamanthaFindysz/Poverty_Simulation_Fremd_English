@@ -1,6 +1,6 @@
 //import React from "react";
 
-let family = {
+var family = {
     //perons data type = array
         //starting money value 
         name: "",
@@ -10,7 +10,7 @@ let family = {
         //does let vs var make a difference here? 
         setName: function(){
             this.name = document.getElementById("familyName").value;
-            document.getElementById("familyTitle").innerHTML = "The " + this.name + " Family";
+            document.getElementById("homeTitle").innerHTML = "The " + this.name + " Family";
         },
 
         familyOf4: function(){
