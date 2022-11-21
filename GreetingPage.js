@@ -9,17 +9,18 @@ const family = {
         familyMembers: null,
         //instances may not be valid
         //does let vs var make a difference here? 
-        setName: function(name1){
-            this.name = name1;
-            //document.getElementById("homeTitle").innerHTML = "The " + this.name + " Family";
+        setName: function(name){
+            this.name = name;
+            changeHomeTitle();
         },
 
         familyOf4: function(){
-            let sarah = new FamilyMember("Sarah");
-            let tessa = new FamilyMember("Tessa");
-            let riley = new FamilyMember("Riley");
-            let e = new FamilyMember("E");
-            this.familyMembers = {sarah, tessa, riley, e};
+            this.familyMembers = 
+            [new FamilyMember("Sarah"),
+            new FamilyMember("Tessa"),
+            new FamilyMember("Riley"),
+            new FamilyMember("E")];
+            console.log(this.familyMembers);
         }
 }
 
@@ -34,20 +35,16 @@ class FamilyMember{
 class HeadOfFamily extends FamilyMember{
 }
 
-let votingBlock = function(title){
-    document.getElementById("testVoteBlock").innerHTML = "pizzaSauce";
-}
-
 
 /*Below are all the html pages to load.
  *After they work, find a more efficient/modern way to load them.
  */
 
  
-let pageLoaded = function(){
+const changeHomeTitle = function(){
     //document.querySelector("body").innerHTML = "<h1>happy<\h1>";
     $(document).ready(function(){
-        $("#introductionParagraph").text("happy");
+        $("#homeTitle").text("The " + family.name + " Family");
     })
 }
 
@@ -59,6 +56,7 @@ class Webpage extends React.Component {
         }
 
         this.handleClick = this.handleClick.bind(this);
+
     }
     handleClick(){
         this.setState({day: 1});
@@ -73,9 +71,11 @@ class Webpage extends React.Component {
     }
 }
 
+
 const Title = (props) => {
     if(props.day == 0){
-        return <h1 id = "homeTitle">The {family.name} Family</h1>
+        //figure out how to change the props.name
+        return <h1 id = "homeTitle">The Family</h1>
     }
     else {
         return <h1>{"Day " + props.day}</h1>
@@ -90,13 +90,13 @@ const DescpriptionParagraph = (props) => {
             return <p>
                 Rent is due today ($1450 for a 3 bedroom apt in Palatine). Riley has basketball tryouts today! Good luck, Riley! Usually, Riley walks to the elementary school and picks E. up on the way home after E. meets with their math tutor (free from the school). Today, Riley can't walk E. home. Tessa has a club meeting after school, and Sarah has work. How should E. get home? 
 
-                Task: Pay rent ($1450)
+                {/**Task: Pay rent ($1450)
 
                 Task: Choose one option for E.'s transportation:
 
                     Option 1: E. should skip math tutoring and take the school bus ($0.00)
                     Option 2: Tessa should skip her club meeting to get E. ($0.00)
-                    Option 3: Sarah should get someone to sub for her at work ($30.00)
+    Option 3: Sarah should get someone to sub for her at work ($30.00)*/}
             </p>
     }
 }
@@ -105,15 +105,61 @@ const UserInteraction = (props) => {
     switch(props.day){
         case 0:
             return <div>
-                <input type = "text" onInput = {family.setName("happy")} placeholder ="Family Name" id = "familyName"/>
+                {/**How can I personalize this for the user
+                 * not always Dalton, but based on the value the user passes in? 
+                 */}
+                <input type = "text" onInput = {family.setName('Dalton')} placeholder ="Family Name"/>
+                {/**Need to require users to choose one family creation if more family size
+                 * options are made. Otherwise, must initialize familyMembers without familyOf4 function
+                 */}
+                <button onClick = {family.familyOf4()}>Create Family of 4</button>
             </div>
         case 1:
             return <div>
-                <button>E Skip</button>
-                <button>Tess Skip</button>
-                <button>Sarah Sub</button>
+                <VotingBlock options = {["E Skip", "Tessa Skip", "Sarah sub"]}/>
+                <button onClick = {submitVotes()}>Submit Votes</button>
             </div>
     }
+}
+
+const VotingBlock = (props) => {
+    const members = family.familyMembers.map(i => <th key = {i.name}>{i.name}</th>)
+    return <table>
+        <thead><tr>
+            {/**creates a blank spot to put options under */}
+            <th></th>
+            {members}
+        </tr></thead>
+        <tbody>
+            <VotingBlockRow options = {props.options} members = {members.length}/>
+        </tbody>
+    </table>   
+}
+
+const VotingBlockRow = (props) => {
+    let rows = [];
+    for(let i = 0; i < props.options.length; i++){
+        rows.push(<tr key = {"row" + i}><VotingBlockChecks options = {props.options[i]} members = {props.members} optionNum = {i}/></tr>)
+    }
+    return rows;
+}
+const VotingBlockChecks = (props) => {
+    let checks = [<td key = {"option" + props.optionNum}>{props.options}</td>];
+    for(let i = 0; i < props.members; i++){
+        checks.push(<td key = {"box" + props.optionNum + i}><input type = "checkbox" onChange = {checkSubmit(props.optionNum, i)}/></td>)
+    }
+    return checks; 
+} 
+
+const checkSubmit = (option, member) => {
+    console.log("checking submit" + member)
+    if(family.familyMembers[member].vote == null){
+        family.familyMembers[member].vote = option;
+    }
+}
+
+const submitVotes = () => {
+
 }
 
 const IntroDescription = (props) => {
@@ -157,6 +203,6 @@ const IntroDescription = (props) => {
 }
 
 
-const domContainer = document.querySelector('#react_tester');
+const domContainer = document.getElementById('react_tester');
 const root = ReactDOM.createRoot(domContainer);
 root.render(<Webpage />);
