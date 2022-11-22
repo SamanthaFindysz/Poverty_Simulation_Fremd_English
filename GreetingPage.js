@@ -1,6 +1,8 @@
 'use strict';
 
-//CHANGED FROM VAR TO CONST
+//may be useful for xml: https://reactjs.org/docs/faq-ajax.html
+//all the events that react can respond to: https://reactjs.org/docs/events.html
+
 const family = {
     //perons data type = array
         //starting money value 
@@ -9,8 +11,8 @@ const family = {
         familyMembers: null,
         //instances may not be valid
         //does let vs var make a difference here? 
-        setName: function(name){
-            this.name = name;
+        setName: function(event){
+            this.name = event.target.value;
             changeHomeTitle();
         },
 
@@ -21,6 +23,11 @@ const family = {
             new FamilyMember("Riley"),
             new FamilyMember("E")];
             console.log(this.familyMembers);
+        },
+        submitPayment: function(event){
+            this.bankAccount -= event.target.dataset.cost;
+            changeBankAccount();
+            event.target.disabled = true; 
         }
 }
 
@@ -36,15 +43,22 @@ class HeadOfFamily extends FamilyMember{
 }
 
 
-/*Below are all the html pages to load.
+/**Below are all the html pages to load.
  *After they work, find a more efficient/modern way to load them.
- */
+ **/
 
- 
-const changeHomeTitle = function(){
+/**this may be something that should be done with lifecycle functions once I implement
+ * store. This as well as the bank account change and all other stats. 
+ */
+ const changeHomeTitle = function(){
     //document.querySelector("body").innerHTML = "<h1>happy<\h1>";
     $(document).ready(function(){
         $("#homeTitle").text("The " + family.name + " Family");
+    })
+}
+const changeBankAccount = function(){
+    $(document).ready(function(){
+        $('#bankValue').text("Current Account: $" + family.bankAccount);
     })
 }
 
@@ -64,6 +78,10 @@ class Webpage extends React.Component {
     render(){
         return <div>
             <Title day = {this.state.day}/>
+            {/**
+             * rethink location of stats, and the rest in general
+             */}
+            <Stats day = {this.state.day}/>
             <DescpriptionParagraph day = {this.state.day}/>
             <UserInteraction day = {this.state.day}/>
             <button onClick = {this.handleClick}>Next</button>
@@ -80,6 +98,12 @@ const Title = (props) => {
     else {
         return <h1>{"Day " + props.day}</h1>
     }
+}
+
+const Stats = (props) => {
+    return <div>
+        <h2 id = "bankValue">Current Account: ${family.bankAccount}</h2>
+    </div>
 }
 
 const DescpriptionParagraph = (props) => {
@@ -105,19 +129,21 @@ const UserInteraction = (props) => {
     switch(props.day){
         case 0:
             return <div>
-                {/**How can I personalize this for the user
-                 * not always Dalton, but based on the value the user passes in? 
-                 */}
-                <input type = "text" onInput = {family.setName('Dalton')} placeholder ="Family Name"/>
+                <input type = "text" onInput = {(event) => family.setName(event)} placeholder ="Family Name"/>
                 {/**Need to require users to choose one family creation if more family size
                  * options are made. Otherwise, must initialize familyMembers without familyOf4 function
                  */}
-                <button onClick = {family.familyOf4()}>Create Family of 4</button>
+                <button onClick = {() => family.familyOf4()}>Create Family of 4</button>
             </div>
         case 1:
             return <div>
+                {/**
+                 * should use store to control the unmounting of this button once it is paid.
+                 * https://stackoverflow.com/questions/36985738/how-to-unmount-unrender-or-remove-a-component-from-itself-in-a-react-redux-typ
+                 */}
+                <button onClick = {(event) => family.submitPayment(event)} data-cost = "1450" id = "payTest">Pay Rent ($1450)</button>
                 <VotingBlock options = {["E Skip", "Tessa Skip", "Sarah sub"]}/>
-                <button onClick = {submitVotes()}>Submit Votes</button>
+                <button onClick = {() => submitVotes()}>Submit Votes</button>
             </div>
     }
 }
@@ -143,19 +169,36 @@ const VotingBlockRow = (props) => {
     }
     return rows;
 }
+
+//checkSubmit(props.optionNum, i)
 const VotingBlockChecks = (props) => {
     let checks = [<td key = {"option" + props.optionNum}>{props.options}</td>];
     for(let i = 0; i < props.members; i++){
-        checks.push(<td key = {"box" + props.optionNum + i}><input type = "checkbox" onChange = {checkSubmit(props.optionNum, i)}/></td>)
+        //'() => function' ensures that the function is only passed and not called at the same time 
+        //answer to input in functional componet: https://stackoverflow.com/questions/56122523/how-to-pass-arguments-to-function-in-functional-component-in-react
+        checks.push(<td key = {"box" + props.optionNum + i}>
+            <input type = "checkbox" onChange = {(event) => checkBoxSubmit(event)} 
+            data-option-num = {props.optionNum} data-i ={i} id = {"box" + props.optionNum + i}/></td>)
     }
     return checks; 
 } 
 
-const checkSubmit = (option, member) => {
-    console.log("checking submit" + member)
-    if(family.familyMembers[member].vote == null){
-        family.familyMembers[member].vote = option;
-    }
+
+const checkBoxSubmit = (event) => {
+    //console.log(event)
+    //event.target.dataset: https://bobbyhadz.com/blog/react-get-data-attribute-from-event
+    //console.log(event.target.dataset)
+    //console.log(event.target.dataset.optionNum)
+    let member = event.target.dataset.i;
+    let option = event.target.dataset.optionNum
+    /**resets the previosly checked checkbox, if there is one
+     * try to figure out a way to do this without gEBI (making the columns interdependent?)
+     * will be an error if more than one votingBlock per page
+     */ 
+    if(family.familyMembers[member].vote != null){
+        document.getElementById("box" + family.familyMembers[member].vote + member).checked = false;
+    } 
+    family.familyMembers[member].vote = option;
 }
 
 const submitVotes = () => {
