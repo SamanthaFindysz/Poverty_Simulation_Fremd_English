@@ -1,0 +1,11 @@
+{
+    "4" : {
+        "family" : [
+            //This is where all the family members go. The first object in the array is the Head of Household.
+            {"name": "Sarah"},
+            {"name": "Tessa"},
+            {"name": "Riley"},
+            {"name": "E"}
+        ]
+    }
+}

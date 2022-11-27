@@ -3,12 +3,23 @@
 //may be useful for xml: https://reactjs.org/docs/faq-ajax.html
 //all the events that react can respond to: https://reactjs.org/docs/events.html
 
+let responseJSON;
+
+let req = new XMLHttpRequest();
+req.open("GET", 'simInfo.json', true);
+req.send();
+req.onload = function() {
+    responseJSON = JSON.parse(req.responseText);
+    console.log(responseJSON);
+}
+
 const family = {
     //perons data type = array
         //starting money value 
         name: "",
         bankAccount: 2000,
-        familyMembers: null,
+        familyMembers: [],
+        info: null,
         //instances may not be valid
         //does let vs var make a difference here? 
         setName: function(event){
@@ -16,12 +27,19 @@ const family = {
             changeHomeTitle();
         },
 
-        familyOf4: function(){
+        /**familyOf4: function(){
             this.familyMembers = 
             [new FamilyMember("Sarah"),
             new FamilyMember("Tessa"),
             new FamilyMember("Riley"),
             new FamilyMember("E")];
+            console.log(this.familyMembers);
+        },*/
+        familyOf4: function(){
+            family.info = responseJSON['4']
+            for(let i = 0; i < 4; i++){
+            this.familyMembers.push(new FamilyMember(family.info.family[i].name))
+            }
             console.log(this.familyMembers);
         },
         submitPayment: function(event){
@@ -65,25 +83,27 @@ const changeBankAccount = function(){
 class Webpage extends React.Component {
     constructor(props){
         super(props);
-        this.state = {
+        /**this.state = {
             day: 0
-        }
+        }*/
 
         this.handleClick = this.handleClick.bind(this);
 
     }
     handleClick(){
-        this.setState({day: 1});
+        //this.setState(state => ({day: state.day + 1}));
+        console.log(this.props.day)
+        //this.props.nextDay();
     }
     render(){
         return <div>
-            <Title day = {this.state.day}/>
+            <Title day = {this.props.day}/>
             {/**
              * rethink location of stats, and the rest in general
              */}
-            <Stats day = {this.state.day}/>
-            <DescpriptionParagraph day = {this.state.day}/>
-            <UserInteraction day = {this.state.day}/>
+            <Stats day = {this.props.day}/>
+            <DescriptionParagraph day = {this.props.day}/>
+            <UserInteraction day = {this.props.day}/>
             <button onClick = {this.handleClick}>Next</button>
         </div>
     }
@@ -106,15 +126,17 @@ const Stats = (props) => {
     </div>
 }
 
-const DescpriptionParagraph = (props) => {
-    switch(props.day){
-        case 0:
+const DescriptionParagraph = (props) => {
+    if(props.day == 0){
             return <IntroDescription/>
-        case 1:
+    } else {
             return <p>
-                Rent is due today ($1450 for a 3 bedroom apt in Palatine). Riley has basketball tryouts today! Good luck, Riley! Usually, Riley walks to the elementary school and picks E. up on the way home after E. meets with their math tutor (free from the school). Today, Riley can't walk E. home. Tessa has a club meeting after school, and Sarah has work. How should E. get home? 
-
-                {/**Task: Pay rent ($1450)
+                {/**family.info.days[props.day].description*/}
+                {/**
+                 * The above piece of code doesn't work,
+                 * I think because of a networking issue
+                 * 
+                 * Task: Pay rent ($1450)
 
                 Task: Choose one option for E.'s transportation:
 
@@ -142,7 +164,11 @@ const UserInteraction = (props) => {
                  * https://stackoverflow.com/questions/36985738/how-to-unmount-unrender-or-remove-a-component-from-itself-in-a-react-redux-typ
                  */}
                 <button onClick = {(event) => family.submitPayment(event)} data-cost = "1450" id = "payTest">Pay Rent ($1450)</button>
-                <VotingBlock options = {["E Skip", "Tessa Skip", "Sarah sub"]}/>
+                <VotingBlock options = {[
+                    {written: "E Skip", price: 0}, 
+                    {written:"Tessa Skip", price: 0}, 
+                    {written: "Sarah sub", price: 30}
+                ]}/>
                 <button onClick = {() => submitVotes()}>Submit Votes</button>
             </div>
     }
@@ -172,13 +198,19 @@ const VotingBlockRow = (props) => {
 
 //checkSubmit(props.optionNum, i)
 const VotingBlockChecks = (props) => {
-    let checks = [<td key = {"option" + props.optionNum}>{props.options}</td>];
+    let checks = [<td key = {"option" + props.optionNum}>{props.options.written}</td>];
+    console.log(props.options)
     for(let i = 0; i < props.members; i++){
         //'() => function' ensures that the function is only passed and not called at the same time 
         //answer to input in functional componet: https://stackoverflow.com/questions/56122523/how-to-pass-arguments-to-function-in-functional-component-in-react
         checks.push(<td key = {"box" + props.optionNum + i}>
             <input type = "checkbox" onChange = {(event) => checkBoxSubmit(event)} 
-            data-option-num = {props.optionNum} data-i ={i} id = {"box" + props.optionNum + i}/></td>)
+            data-option-num = {props.optionNum} data-i ={i} id = {"box" + props.optionNum + i}
+            /**why do I have to put in a price and cannot pass in the entire option object?
+             * definitely need to fix if going to pass in happiness information.
+             * Maybe use Object.values() and/or Object.keys()?
+             */
+             /></td>)
     }
     return checks; 
 } 
@@ -190,19 +222,60 @@ const checkBoxSubmit = (event) => {
     //console.log(event.target.dataset)
     //console.log(event.target.dataset.optionNum)
     let member = event.target.dataset.i;
-    let option = event.target.dataset.optionNum
+    let option = event.target.dataset.optionNum;
     /**resets the previosly checked checkbox, if there is one
-     * try to figure out a way to do this without gEBI (making the columns interdependent?)
+     * try to figure out a way to do this without getElementById (making the columns interdependent?)
      * will be an error if more than one votingBlock per page
      */ 
     if(family.familyMembers[member].vote != null){
         document.getElementById("box" + family.familyMembers[member].vote + member).checked = false;
     } 
     family.familyMembers[member].vote = option;
+    calculateVotes();
 }
 
-const submitVotes = () => {
+const calculateVotes = () => {
+    //this may help implement this code with objects (think Python dictionary):
+    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isExtensible
+    let votesArray = [];
+    for(let i = 0; i < family.familyMembers.length; i++){
+        if(family.familyMembers[i].vote == null){
+            return;
+        }
+        votesArray.push(family.familyMembers[i].vote);
+    }
 
+    let maxOccurences = 0;
+    let winningVote;
+    let tie = false;
+    while(votesArray.length > 0){
+        let currentVote = votesArray[0];
+        let occurrences = 1;
+        votesArray.splice(0, 1);
+        for(let i = 0; i < votesArray.length; i++){
+            if(votesArray[i] == currentVote){
+                occurrences++;
+                votesArray.splice(i, 1);
+                i--;
+            }
+        }
+        if(maxOccurences < occurrences){
+            maxOccurences = occurrences;
+            winningVote = currentVote; 
+            tie = false;
+        }else if(maxOccurences == occurrences){
+            tie = true; 
+        }
+        occurrences = 1;
+    }
+
+    console.log(input)
+    /**if(tie == true){
+        changeBankAccount(input[family.familyMembers[0].vote].cost);
+    } else {
+        changeBankAccount(input[winningVote].cost);
+    }**/
+    
 }
 
 const IntroDescription = (props) => {
@@ -246,6 +319,57 @@ const IntroDescription = (props) => {
 }
 
 
+const rootReducer = () => {
+    return null
+}
+
+const initState = {
+    day: 0
+}
+
+//action type
+const NEXT = 'NEXT';
+//action creator
+const next = () => {
+    return {
+        type: NEXT
+    }
+}
+
+const dayReducer = (state = initState, action) => {
+    if(action.type === NEXT){
+        return {
+            ...state,
+            day: state.day + 1
+        }
+    } else {
+        return null
+    }
+}
+
+const store = Redux.createStore(() => dayReducer/** , Redux.applyMiddleware(ReduxThunk.default)*/);
+
+//???
+const mapStateToProps = (state) => {
+    return {
+        day: state
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        nextDay: () => {
+            console.log("is going next")
+            dispatch(next())
+        }
+    }
+}
+
+const connect = ReactRedux.connect;
+const connectedWebpage = connect(mapStateToProps, mapDispatchToProps)(Webpage)
+
+const Provider = ReactRedux.Provider;
+
 const domContainer = document.getElementById('react_tester');
 const root = ReactDOM.createRoot(domContainer);
-root.render(<Webpage />);
+root.render(<Provider store = {store}><Webpage /></Provider>);
