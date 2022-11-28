@@ -16,7 +16,7 @@ req.onload = function() {
 const family = {
     //perons data type = array
         //starting money value 
-        name: "",
+        //name: "",
         bankAccount: 2000,
         familyMembers: [],
         info: null,
@@ -68,52 +68,55 @@ class HeadOfFamily extends FamilyMember{
 /**this may be something that should be done with lifecycle functions once I implement
  * store. This as well as the bank account change and all other stats. 
  */
- const changeHomeTitle = function(){
+ /*const changeHomeTitle = function(){
     //document.querySelector("body").innerHTML = "<h1>happy<\h1>";
     $(document).ready(function(){
         $("#homeTitle").text("The " + family.name + " Family");
     })
-}
+}*/
 const changeBankAccount = function(){
     $(document).ready(function(){
         $('#bankValue').text("Current Account: $" + family.bankAccount);
     })
 }
 
-class Webpage extends React.Component {
-    constructor(props){
+const Webpage = (props) => {
+//class Webpage extends React.Component {
+    /**constructor(props){
         super(props);
-        /**this.state = {
+        this.state = {
             day: 0
-        }*/
+        }
 
         this.handleClick = this.handleClick.bind(this);
 
+    }*/
+    let handleClick = () => {
+        props.nextDay()
     }
-    handleClick(){
-        //this.setState(state => ({day: state.day + 1}));
-        console.log(this.props.day)
-        //this.props.nextDay();
+    let handleInput = (event) => {
+        props.submitNewName(event.target.value)
     }
-    render(){
+    //render(){
         return <div>
-            <Title day = {this.props.day}/>
+            <Title {...props}/>
             {/**
              * rethink location of stats, and the rest in general
              */}
-            <Stats day = {this.props.day}/>
-            <DescriptionParagraph day = {this.props.day}/>
-            <UserInteraction day = {this.props.day}/>
-            <button onClick = {this.handleClick}>Next</button>
+            <Stats day = {props.day}/>
+            <DescriptionParagraph day = {props.day}/>
+            <UserInteraction day = {props.day}/>
+            <input type = "text" onInput = {(event) => handleInput(event)} placeholder ="Family Name"/>
+            <button onClick = {handleClick}>Next</button>
         </div>
-    }
+    //}
 }
 
 
 const Title = (props) => {
     if(props.day == 0){
         //figure out how to change the props.name
-        return <h1 id = "homeTitle">The Family</h1>
+        return <h1>The {props.name} Family</h1>
     }
     else {
         return <h1>{"Day " + props.day}</h1>
@@ -319,57 +322,84 @@ const IntroDescription = (props) => {
 }
 
 
-const rootReducer = () => {
-    return null
-}
 
 const initState = {
-    day: 0
+    day: 0,
+    name: ''
 }
 
 //action type
 const NEXT = 'NEXT';
+const CHANGE = 'CHANGE'
 //action creator
 const next = () => {
     return {
         type: NEXT
     }
 }
-
-const dayReducer = (state = initState, action) => {
-    if(action.type === NEXT){
-        return {
-            ...state,
-            day: state.day + 1
-        }
-    } else {
-        return null
+const newName = (input) => {
+    return {
+        type: CHANGE,
+        input
     }
 }
 
-const store = Redux.createStore(() => dayReducer/** , Redux.applyMiddleware(ReduxThunk.default)*/);
+const dayReducer = (state = initState, action) => {
+    switch(action.type){
+        case NEXT:
+            return {
+                ...state,
+                day: state.day + 1
+            }
+        default:
+            return state
+    }
+}
+
+const nameReducer = (state = initState, action) => {
+    switch(action.type){
+        case CHANGE:
+            return {
+                ...state,
+                name: action.input
+            }
+        default:
+            return state
+    }
+}
+
+//must use combineReducers here in some way 
+const rootReducer = Redux.combineReducers({
+    dayChange: dayReducer,
+    nameChange: nameReducer
+})
+
+const store = Redux.createStore(rootReducer/** , Redux.applyMiddleware(ReduxThunk.default)*/);
 
 //???
-const mapStateToProps = (state) => {
+const mapStateToProps = (state = initState) => {
     return {
-        day: state
+        day: state.dayChange.day, 
+        name: state.nameChange.name
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
         nextDay: () => {
-            console.log("is going next")
             dispatch(next())
+        },
+        submitNewName: (name) => {
+            dispatch(newName(name))
         }
     }
 }
 
 const connect = ReactRedux.connect;
-const connectedWebpage = connect(mapStateToProps, mapDispatchToProps)(Webpage)
+const ConnectedWebpage = connect(mapStateToProps, mapDispatchToProps)(Webpage)
 
 const Provider = ReactRedux.Provider;
 
-const domContainer = document.getElementById('react_tester');
+const domContainer = document.getElementById('root');
 const root = ReactDOM.createRoot(domContainer);
-root.render(<Provider store = {store}><Webpage /></Provider>);
+root.render(<Provider store = {store}><ConnectedWebpage /></Provider>);
