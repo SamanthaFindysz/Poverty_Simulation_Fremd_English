@@ -1,9 +1,9 @@
 'use strict';
-
+//import { data } from 'info.js';
 //may be useful for xml: https://reactjs.org/docs/faq-ajax.html
 //all the events that react can respond to: https://reactjs.org/docs/events.html
 
-let responseJSON;
+/**let responseJSON;
 
 let req = new XMLHttpRequest();
 req.open("GET", 'simInfo.json', true);
@@ -11,8 +11,9 @@ req.send();
 req.onload = function() {
     responseJSON = JSON.parse(req.responseText);
     console.log(responseJSON);
-}
-
+}*/
+//let jam = data; 
+//console.log(jam);
 const family = {
     //perons data type = array
         //starting money value 
@@ -330,7 +331,7 @@ const initState = {
 
 //action type
 const NEXT = 'NEXT';
-const CHANGE = 'CHANGE'
+const CHANGE = 'CHANGE';
 //action creator
 const next = () => {
     return {
